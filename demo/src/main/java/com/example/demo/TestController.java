@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @GetMapping("/cth")
     public String cth() {
-        return "cth3";
+        return "cth5";
     }
 }

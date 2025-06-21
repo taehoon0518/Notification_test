@@ -3,10 +3,10 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
-                echo 'Building the project...'
-                // 실제 빌드 스크립트 추가
-            }
+             steps {
+                    echo '의도적으로 실패 테스트 중...'
+                    sh 'exit 1'  // 0이 아닌 값을 리턴하면 실패 처리됨
+             }
         }
     }
 
