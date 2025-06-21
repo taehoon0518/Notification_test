@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                // 여기에 빌드 스크립트
+            }
+        }
+    }
+    post {
+        success {
+            sh '''
+            curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"content": "✅ 빌드 성공: Job 이름: ${JOB_NAME}, 빌드 번호: ${BUILD_NUMBER}"}' \
+            https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7
+            '''
+        }
+        failure {
+            sh '''
+            curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"content": "❌ 빌드 실패: Job 이름: ${JOB_NAME}, 빌드 번호: ${BUILD_NUMBER}"}' \
+            https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7
+            '''
+        }
+    }
+}
