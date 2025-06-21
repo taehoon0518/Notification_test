@@ -17,14 +17,9 @@ pipeline {
                 def buildNumber = env.BUILD_NUMBER
                 def buildUrl = env.BUILD_URL
 
-                def message = "✅ 빌드 성공!\nJob: ${jobName}\nBuild: #${buildNumber}\n[빌드 확인하기](${buildUrl})"
+                def message = "✅ 빌드 성공! Job: ${jobName} Build: #${buildNumber} 빌드 확인: ${buildUrl}"
 
-                sh """
-                    curl -H "Content-Type: application/json" \
-                    -X POST \
-                    -d '{"content": "${message}"}' \
-                    https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7
-                """
+                sh "curl -H 'Content-Type: application/json' -X POST -d '{\"content\": \"${message}\"}' https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7"
             }
         }
         failure {
@@ -33,14 +28,9 @@ pipeline {
                 def buildNumber = env.BUILD_NUMBER
                 def buildUrl = env.BUILD_URL
 
-                def message = "❌ 빌드 실패!\nJob: ${jobName}\nBuild: #${buildNumber}\n[빌드 확인하기](${buildUrl})"
+                def message = "❌ 빌드 실패! Job: ${jobName} Build: #${buildNumber} 빌드 확인: ${buildUrl}"
 
-                sh """
-                    curl -H "Content-Type: application/json" \
-                    -X POST \
-                    -d '{"content": "${message}"}' \
-                    https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7
-                """
+                sh "curl -H 'Content-Type: application/json' -X POST -d '{\"content\": \"${message}\"}' https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7"
             }
         }
     }
