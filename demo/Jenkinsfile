@@ -1,63 +1,31 @@
-import groovy.json.JsonOutput
-
 pipeline {
     agent any
 
     stages {
         stage('Build') {
             steps {
-                echo 'Building the project...'
+                sh './gradlew clean build'
             }
         }
-    }
 
-    post {
-        success {
-            script {
-                def jobName = env.JOB_NAME
-                def buildNumber = env.BUILD_NUMBER
-                def buildUrl = env.BUILD_URL
-                def buildUser = env.BUILD_USER ?: "알 수 없음"
-                def gitCommit = env.GIT_COMMIT ?: "커밋 정보 없음"
-                def gitBranch = env.GIT_BRANCH ?: "브랜치 정보 없음"
-                def buildDuration = currentBuild.durationString ?: "소요시간 정보 없음"
+        stage('Notify') {
+            steps {
+                script {
+                    def payload = """
+                    {
+                        "jobName": "deploy-service-a",
+                        "eventType": "BUILD_SUCCESS",
+                        "message": "✅ 빌드 성공!"
+                    }
+                    """
 
-                def message = """✅ 빌드 성공!
-- Job 이름: ${jobName}
-- 빌드 번호: #${buildNumber}
-- 빌드 URL: ${buildUrl}
-- 빌드 실행자: ${buildUser}
-- 브랜치: ${gitBranch}
-- 커밋 SHA: ${gitCommit}
-- 빌드 소요시간: ${buildDuration}"""
-
-                def payload = JsonOutput.toJson([content: message])
-
-                sh "curl -H 'Content-Type: application/json' -X POST -d '${payload}' https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7"
-            }
-        }
-        failure {
-            script {
-                def jobName = env.JOB_NAME
-                def buildNumber = env.BUILD_NUMBER
-                def buildUrl = env.BUILD_URL
-                def buildUser = env.BUILD_USER ?: "알 수 없음"
-                def gitCommit = env.GIT_COMMIT ?: "커밋 정보 없음"
-                def gitBranch = env.GIT_BRANCH ?: "브랜치 정보 없음"
-                def buildDuration = currentBuild.durationString ?: "소요시간 정보 없음"
-
-                def message = """❌ 빌드 실패!
-- Job 이름: ${jobName}
-- 빌드 번호: #${buildNumber}
-- 빌드 URL: ${buildUrl}
-- 빌드 실행자: ${buildUser}
-- 브랜치: ${gitBranch}
-- 커밋 SHA: ${gitCommit}
-- 빌드 소요시간: ${buildDuration}"""
-
-                def payload = JsonOutput.toJson([content: message])
-
-                sh "curl -H 'Content-Type: application/json' -X POST -d '${payload}' https://discord.com/api/webhooks/1386017644993318952/jmjtLjeTUu7iP1slpKfMDPVkoAvBSWCtzx8E2JhDt9WW7wdGxHi2Ob_BsoWMR_GuVQw7"
+                    httpRequest(
+                        httpMode: 'POST',
+                        contentType: 'APPLICATION_JSON',
+                        requestBody: payload,
+                        url: 'http://localhost:8080/notifications/notify'
+                    )
+                }
             }
         }
     }
