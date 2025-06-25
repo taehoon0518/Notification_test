@@ -1,12 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        NOTIFY_URL = "http://1.221.229.38:8080/notifications/notify"
+    }
+
     stages {
         stage('Build') {
             steps {
                 dir('demo') {
-                    sh 'chmod +x gradlew'  // 권한 문제 방지
-                    sh './gradlew clean build -x test'  // 테스트 제외 빌드
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build -x test'
                 }
             }
         }
@@ -26,7 +30,7 @@ pipeline {
                         httpMode: 'POST',
                         contentType: 'APPLICATION_JSON',
                         requestBody: payload,
-                        url: 'http://1.221.229.38:8080/notifications/notify'
+                        url: env.NOTIFY_URL
                     )
                 }
             }
