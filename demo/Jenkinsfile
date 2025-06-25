@@ -2,16 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Check Files') {
-            steps {
-                sh 'ls -al'
-                sh 'ls -al gradlew'
-            }
-        }
-
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                dir('demo') {
+                    sh './gradlew clean build'
+                }
             }
         }
 
@@ -25,6 +20,7 @@ pipeline {
                         "message": "✅ 빌드 성공!"
                     }
                     """
+
                     httpRequest(
                         httpMode: 'POST',
                         contentType: 'APPLICATION_JSON',
